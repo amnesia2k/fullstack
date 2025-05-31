@@ -1,13 +1,51 @@
 import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import fs from "node:fs";
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
+
+// Needed to construct __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 8000;
-
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
-});
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+// Load route files
+const loadRoutes = async () => {
+  const routesPath = path.join(__dirname, "routes");
+  const routeFiles = fs
+    .readdirSync(routesPath)
+    .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
+
+  await Promise.all(
+    routeFiles.map(async (file) => {
+      try {
+        const filePath = path.join(routesPath, file);
+        const route = await import(pathToFileURL(filePath).href);
+        app.use("/api/v1", route.default);
+        console.log(`✅ Loaded /api/v1 from ${file}`);
+      } catch (error) {
+        console.error("❌ Failed to load route file:", error);
+      }
+    })
+  );
+};
+
+// Start server after loading routes
+const startServer = async () => {
+  await loadRoutes();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  });
+};
+
+startServer();
