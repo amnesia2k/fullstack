@@ -1,15 +1,17 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
-  integer,
   pgEnum,
   pgTable,
+  timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "creator", "admin"]);
 
 export const usersTable = pgTable("users", {
-  _id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  _id: varchar({ length: 255 }).primaryKey(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
@@ -17,5 +19,5 @@ export const usersTable = pgTable("users", {
   image: varchar({ length: 255 }).default("https://example.com/avatar.jpg"),
   role: userRoleEnum("role").notNull().default("user"),
   isVerified: boolean().notNull().default(false),
-  createdAt: integer().notNull().default(Date.now()),
+  createdAt: timestamp().notNull().defaultNow(),
 });

@@ -19,13 +19,19 @@
   "packageManager": "pnpm@10.6.5",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.44.1",
+    "drizzle-zod": "^0.8.2",
     "express": "^5.1.0",
-    "pg": "^8.16.0"
+    "express-async-handler": "^1.2.0",
+    "pg": "^8.16.0",
+    "zod": "^3.25.45"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",

@@ -1,3 +1,3 @@
-import * as usersSchema from "./userSchema";
+import { usersTable } from "./userSchema";
 
-export default { ...usersSchema };
+export const schema = { usersTable };
