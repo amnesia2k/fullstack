@@ -15,6 +15,7 @@ export const usersTable = pgTable("users", {
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
+  // token: varchar({ length: 255 }).notNull(),
   bio: varchar({ length: 255 }).default("I'm a new user!"),
   image: varchar({ length: 255 }).default("https://example.com/avatar.jpg"),
   role: userRoleEnum("role").notNull().default("user"),

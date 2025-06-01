@@ -4,6 +4,7 @@ import { usersTable } from "../../db/userSchema";
 import { eq } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import bcrypt from "bcrypt";
+import { generateToken } from "../../helpers/generate-token";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -41,25 +42,31 @@ export const registerUser = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
-    const newUser = await db
+    const createdUser = await db
       .insert(usersTable)
       .values({
         _id: createId(),
         name,
         email,
-        password: hashedPassword, // Replace with hashedPassword when ready
+        password: hashedPassword,
       })
       .returning();
 
-    // Convert bigint _id to string before sending response
-    const userSafe = {
-      ...newUser[0],
-      _id: newUser[0]._id.toString(),
-    };
+    const user = createdUser[0];
+
+    const token = generateToken(user._id);
+
+    res.cookie("token", token, {
+      path: "/",
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      sameSite: true,
+      secure: true,
+    });
 
     res
       .status(201)
-      .json({ message: "User created successfully", user: userSafe });
+      .json({ message: "User created successfully", ...user, token });
 
     return;
   } catch (error) {
