@@ -66,7 +66,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     res
       .status(201)
-      .json({ message: "User created successfully", ...user, token });
+      .json({ message: "User created successfully", data: { ...user, token } });
 
     return;
   } catch (error) {
@@ -117,8 +117,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       message: "User logged in successfully",
-      ...userWithoutPassword,
-      token,
+      data: { ...userWithoutPassword, token },
     });
     return;
   } catch (error) {
@@ -137,7 +136,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     res.status(200).json({
       message: "All Users fetched successfully!",
-      users: usersWithoutPassword,
+      data: { users: usersWithoutPassword },
     });
     return;
   } catch (error) {
@@ -160,7 +159,7 @@ export const getUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       message: "User fetched successfully!",
-      user: userWithoutPassword[0],
+      data: { user: userWithoutPassword[0] },
     });
   } catch (error) {
     console.error("Error fetching user:", error);
