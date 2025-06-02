@@ -3,10 +3,12 @@ import { api } from "../lib/axios";
 
 type RegisterResponse = {
   message: string;
-  _id: string;
-  name: string;
-  email: string;
-  token: string;
+  data: {
+    _id: string;
+    name: string;
+    email: string;
+    token: string;
+  };
 };
 
 export const useRegisterUser = () => {
