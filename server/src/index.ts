@@ -13,7 +13,24 @@ const PORT = process.env.PORT || 8000;
 const app = express();
 
 // Middlewares
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000", // dev
+  "https://your-frontend.com", // prod
+  "https://your-frontend.vercel.app", // alt prod
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
