@@ -25,3 +25,14 @@ export const registerUserSchema = z.object({
     .max(255, "Image URL cannot be longer than 255 characters")
     .default("https://example.com/avatar.jpg"),
 });
+
+export const loginUserSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(
+      strongPasswordRegex,
+      "Password must contain at least 1 letter, 1 number, and 1 special character"
+    ),
+});

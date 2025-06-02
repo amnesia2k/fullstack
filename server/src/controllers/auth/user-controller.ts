@@ -10,7 +10,7 @@ export const registerUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
-    // Basic validation
+    // validate user input
     if (!name || !email || !password) {
       res.status(400).json({ message: "All fields are required" });
       return;
@@ -23,7 +23,7 @@ export const registerUser = async (req: Request, res: Response) => {
       return;
     }
 
-    // Check if user already exists
+    // checks if user already exists
     const existingUsers = await db
       .select()
       .from(usersTable)
@@ -41,7 +41,7 @@ export const registerUser = async (req: Request, res: Response) => {
     // hash password
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
+    // creates a new user
     const createdUser = await db
       .insert(usersTable)
       .values({
@@ -52,7 +52,7 @@ export const registerUser = async (req: Request, res: Response) => {
       })
       .returning();
 
-    const user = createdUser[0];
+    const { password: _, ...user } = createdUser[0];
 
     const token = generateToken(user._id);
 
@@ -70,7 +70,59 @@ export const registerUser = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
-    console.error("Error in registerUser:", error);
+    console.error("Error registering new user:", error);
+    res.status(500).json({ message: "Server error, try again later" });
+    return;
+  }
+};
+
+export const loginUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // validate user input
+    if (!email || !password) {
+      res.status(400).json({ message: "All fields are required" });
+      return;
+    }
+
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email));
+
+    if (user.length === 0) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user[0].password);
+
+    if (!isPasswordValid) {
+      res.status(400).json({ message: "Invalid password" });
+      return;
+    }
+
+    const { password: _, ...userWithoutPassword } = user[0];
+
+    const token = generateToken(userWithoutPassword._id);
+
+    res.cookie("token", token, {
+      path: "/",
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      sameSite: true,
+      secure: true,
+    });
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      ...userWithoutPassword,
+      token,
+    });
+    return;
+  } catch (error) {
+    console.error("Error logging in user:", error);
     res.status(500).json({ message: "Server error, try again later" });
     return;
   }

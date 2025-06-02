@@ -1,183 +1,150 @@
-# 🚀 Fullstack Authentication Server 🔐
+# 🚀 Fullstack Authentication Boilerplate 🔐
 
-A modern and secure backend server built with TypeScript, designed for handling user authentication and data management. This project leverages cutting-edge technologies to provide a robust and scalable foundation for any full-stack application.
+A modern, production-ready authentication boilerplate built with TypeScript, Express, Drizzle ORM, and more! Jumpstart your next fullstack project with robust user authentication features.
+
+## ✨ Description
+
+This project provides a solid foundation for building fullstack applications requiring user authentication. It includes user registration, login, and secure password handling. It leverages modern technologies to ensure scalability and maintainability.
+
+## 💻 Installation
+
+Follow these steps to set up the project locally:
+
+- 👯 **Clone the Repository:**
+
+  ```bash
+  git clone https://github.com/amnesia2k/fullstack.git
+  cd fullstack/server
+  ```
+
+- ⚙️ **Install Dependencies:**
+
+  ```bash
+  pnpm install
+  ```
+
+- 📝 **Configure Environment Variables:**
+
+  - Create a `.env` file based on `.env.example`.
+  - Update the `DATABASE_URL`, `JWT_SECRET`, and `PORT` variables as needed.
+
+  ```bash
+  cp .env.example .env
+  # Edit .env
+  ```
+
+- 💾 **Run Database Migrations:**
+
+  ```bash
+  pnpm db:push
+  pnpm db:migrate
+  ```
+
+- 🚀 **Start the Development Server:**
+  ```bash
+  pnpm dev
+  ```
+
+## 💡 Usage
+
+### Registering a New User
+
+To register a new user, send a POST request to the `/api/v1/register` endpoint with the following JSON body:
+
+```json
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "securePassword"
+}
+```
+
+### Logging In
+
+To log in, send a POST request to the `/api/v1/login` endpoint with the following JSON body:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securePassword"
+}
+```
+
+### Fetching all users
+
+To fetch all users, send a GET request to the `/api/v1/users` endpoint.
+
+```bash
+  curl http://localhost:8000/api/v1/users
+```
+
+### Fetching User by ID
+
+To fetch an user by ID, send a GET request to the `/api/v1/user/:id` endpoint.
+
+```bash
+  curl http://localhost:8000/api/v1/user/:id
+```
+
+<details>
+<summary>Detailed Instructions</summary>
+
+1.  **Clone the repository:** Follow the `git clone` command as outlined in the Installation section.
+2.  **Install dependencies:** Ensure all dependencies are installed using `pnpm install`.
+3.  **Set up the database:**
+    - Make sure you have a PostgreSQL database instance running.
+    - Update the `DATABASE_URL` in your `.env` file to point to your database.
+4.  **Run migrations:** This will create the necessary tables in your database.
+5.  **Start the server:** Use the `pnpm dev` command to start the development server with hot-reloading.
+</details>
 
 ## ✨ Features
 
 - ✅ **User Registration:** Securely register new users with validation.
-- 🔒 **Authentication:** Authenticate users and manage sessions.
-- 🛡️ **Password Hashing:** Uses bcrypt for secure password storage.
-- 🔑 **JWT Tokens:** JSON Web Tokens for secure authentication.
-- 🗄️ **Database:** PostgreSQL database with Drizzle ORM for efficient data management.
-- 🚦 **Validation Middleware:** Zod-based middleware for request validation.
+- 🔑 **User Login:** Authenticate existing users with password verification.
+- 🛡️ **Password Hashing:** Bcrypt is used for secure password storage.
+- 🍪 **Cookie-Based Authentication:** JWT tokens stored in cookies for session management.
+- 📦 **Zod Validation:** Data validation using Zod schemas.
+- 🚀 **Drizzle ORM:** Type-safe database interactions with Drizzle ORM.
 
 ## 🛠️ Technologies Used
 
-| Technology     | Link                                                                                     |
-| :------------- | :--------------------------------------------------------------------------------------- |
-| TypeScript     | [https://www.typescriptlang.org/](https://www.typescriptlang.org/)                       |
-| Express        | [https://expressjs.com/](https://expressjs.com/)                                         |
-| Drizzle ORM    | [https://orm.drizzle.team/](https://orm.drizzle.team/)                                   |
-| PostgreSQL     | [https://www.postgresql.org/](https://www.postgresql.org/)                               |
-| Zod            | [https://zod.dev/](https://zod.dev/)                                                     |
-| JSON Web Token | [https://jwt.io/](https://jwt.io/)                                                       |
-| Bcrypt         | [https://www.npmjs.com/package/bcrypt](https://www.npmjs.com/package/bcrypt)             |
-| CORS           | [https://github.com/expressjs/cors](https://github.com/expressjs/cors)                   |
-| Cookie Parser  | [https://github.com/expressjs/cookie-parser](https://github.com/expressjs/cookie-parser) |
-
-## 📦 Installation
-
-Follow these steps to set up the project locally:
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/amnesia2k/fullstack.git
-    cd fullstack/server
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    pnpm install
-    ```
-
-3.  **Set up the `.env` file:**
-
-    - Create a `.env` file in the root directory.
-    - Populate it with the necessary environment variables. Refer to `.env.example` for the required variables.
-
-      ```
-      PORT=8000
-      DATABASE_URL="your_database_url_here"
-      JWT_SECRET=your_jwt_secret_key
-      ```
-
-4.  **Configure the database:**
-
-    - Ensure you have PostgreSQL installed and running.
-    - Update the `DATABASE_URL` in your `.env` file with your PostgreSQL connection string.
-    - Run the database migrations:
-
-      ```bash
-      pnpm db:push
-      ```
-
-5.  **Start the development server:**
-
-    ```bash
-    pnpm dev
-    ```
-
-## 🚀 Usage
-
-### API Endpoints
-
-<details>
-<summary><strong>User Registration</strong></summary>
-
-- **Endpoint:** `POST /api/v1/register`
-- **Request Body:**
-
-  ```json
-  {
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "password": "securePassword"
-  }
-  ```
-
-- **Response:**
-
-  ```json
-  {
-    "message": "User created successfully",
-    "_id": "uniqueUserId",
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "bio": "I'm a new user!",
-    "image": "https://example.com/avatar.jpg",
-    "role": "user",
-    "isVerified": false,
-    "createdAt": "2024-06-03T12:00:00.000Z",
-    "token": "generatedJwtToken"
-  }
-  ```
-
-</details>
-
-<details>
-<summary><strong>Get All Users</strong></summary>
-
-- **Endpoint:** `GET /api/v1/get-users`
-- **Response:**
-
-  ```json
-  {
-    "message": "All Users fetched successfully!",
-    "users": [
-      {
-        "_id": "uniqueUserId",
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "bio": "I'm a new user!",
-        "image": "https://example.com/avatar.jpg",
-        "role": "user",
-        "isVerified": false,
-        "createdAt": "2024-06-03T12:00:00.000Z"
-      }
-    ]
-  }
-  ```
-
-</details>
-
-<details>
-<summary><strong>Get User by ID</strong></summary>
-
-- **Endpoint:** `GET /api/v1/user/:id`
-- **Example:** `GET /api/v1/user/uniqueUserId`
-- **Response:**
-
-  ```json
-  {
-    "message": "User fetched successfully!",
-    "user": {
-      "_id": "uniqueUserId",
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "bio": "I'm a new user!",
-      "image": "https://example.com/avatar.jpg",
-      "role": "user",
-      "isVerified": false,
-      "createdAt": "2024-06-03T12:00:00.000Z"
-    }
-  }
-  ```
-
-</details>
+| Technology     | Description                                                 | Link                                                        |
+| :------------- | :---------------------------------------------------------- | :---------------------------------------------------------- |
+| TypeScript     | Primary language for type safety and maintainability        | [TypeScript](https://www.typescriptlang.org/)               |
+| Express        | Web framework for building APIs                             | [Express](https://expressjs.com/)                           |
+| Drizzle ORM    | Modern and typesafe ORM                                     | [Drizzle ORM](https://orm.drizzle.team/)                    |
+| PostgreSQL     | Relational database for storing user data                   | [PostgreSQL](https://www.postgresql.org/)                   |
+| Bcrypt         | Library for hashing passwords                               | [Bcrypt](https://www.npmjs.com/package/bcrypt)              |
+| JSON Web Token | For creating and managing user sessions                     | [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)  |
+| Zod            | Schema declaration and validation                           | [Zod](https://github.com/colinhacks/zod)                    |
+| CUID2          | Generate unique IDs                                         | [CUID2](https://github.com/paralleldrive/cuid2)             |
+| Cors           | Cross-origin resource sharing                               | [Cors](https://github.com/expressjs/cors)                   |
+| Cookie Parser  | Parse Cookie header and populate req.cookies with an object | [Cookie Parser](https://github.com/expressjs/cookie-parser) |
+| Neon           | Fully managed serverless PostGres Database                  | [Neon](https://neon.tech/)                                  |
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here are the steps to contribute:
+We welcome contributions to improve this boilerplate! Here's how you can contribute:
 
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix.
-3.  Make your changes and commit them.
-4.  Submit a pull request.
+- 🐛 **Report Bugs:** Submit detailed bug reports with steps to reproduce.
+- 💡 **Suggest Features:** Propose new features and enhancements.
+- 💻 **Submit Pull Requests:** Contribute code changes with clear descriptions.
 
 Please follow these guidelines:
 
-- 📝 Use clear and concise commit messages.
-- 🧪 Write tests for new features.
-- 📚 Update documentation as needed.
+- **Code Style:** Follow the existing code style.
+- **Commit Messages:** Use clear and descriptive commit messages.
+- **Testing:** Write tests for new features and bug fixes.
 
-## 📜 License
+## 📝 License
 
 This project is licensed under the [MIT License](LICENSE).
 
-## 🧑‍Author
+## 👨‍💻 Author Info
 
-[Olatilewa Olatoye](https://github.com/amnesia2k)
+- **GitHub**: [Your Github Link Here](https://github.com/amnesia2k)
+- **LinkedIn**: [Your LinkedIn Link Here](https://www.linkedin.com/in/olatilewaolatoye/)
+- **Twitter**: [Your Twitter Link Here](https://x.com/@olathedev_)
 
 [![Readme was generated by Dokugen](https://img.shields.io/badge/Readme%20was%20generated%20by-Dokugen-brightgreen)](https://www.npmjs.com/package/dokugen)
