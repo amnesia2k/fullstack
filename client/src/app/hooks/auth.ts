@@ -23,6 +23,13 @@ export const useRegisterUser = () => {
       password: string;
     }) => {
       const res = await api.post<RegisterResponse>(`/register`, formData);
+
+      // const { data } = res.data;
+
+      // if (data?.token) {
+      //   document.cookie = `token=${data?.token}; path=/; samesite=lax max-age=${60 * 60 * 24 * 30} secure`;
+      // }
+
       console.log(res);
       console.log(res.data);
       return res.data;

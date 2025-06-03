@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -15,9 +16,38 @@ export default function RegisterPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    registerMutation.mutate(form);
+
+    try {
+      toast.promise(registerMutation.mutateAsync(form), {
+        loading: "Creating account...",
+        success: "Account created successfully",
+        error: "There was an error creating your account",
+      });
+
+      // ✅ Do something after success, like redirect
+      // router.push("/dashboard"); // or any page you want
+    } catch (err) {
+      // This block won't be hit unless toast.promise itself fails (very rare),
+      // but good to have for edge cases or logging
+      function isErrorWithMessage(
+        error: unknown,
+      ): error is { message: string } {
+        return (
+          typeof error === "object" &&
+          error !== null &&
+          "message" in error &&
+          typeof (error as { message: unknown }).message === "string"
+        );
+      }
+
+      const errorMessage = isErrorWithMessage(err)
+        ? err.message
+        : "There was an error creating your account";
+      toast.error(errorMessage ?? "There was an error creating your account");
+      console.error("Registration error:", err);
+    }
   };
 
   return (
