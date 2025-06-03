@@ -19,10 +19,10 @@ const router = express.Router();
 
 router.post("/register", validateData(registerUserSchema), registerUser);
 router.post("/login", validateData(loginUserSchema), loginUser);
-router.get("/users", validateToken, validateUserRole(["admin"]), getAllUsers);
-router.get("/user/:id", getUser);
 router.post("/logout", logoutUser);
-router.delete("/delete", deleteAccount);
+router.get("/users", validateToken, validateUserRole(["admin"]), getAllUsers);
+router.get("/user", validateToken, getUser);
+router.delete("/delete", validateToken, deleteAccount);
 router.delete(
   "/admin/delete",
   validateToken,

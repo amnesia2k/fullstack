@@ -179,9 +179,19 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    // const { id } = req.params;
+    const requester = req.user; // Assuming the user ID is in the request object
+    //  as { id: string; role: string }; // type hint, adjust if needed
 
-    if (!id) {
+    // Check if the requester is authenticated
+    if (!requester) {
+      res.status(401).json({ message: "User not authenticated!" });
+      return;
+    }
+
+    const _id = requester._id; // Get the user ID from the requester
+
+    if (!_id) {
       res.status(400).json({ message: "User ID is required!" });
       return;
     }
@@ -189,7 +199,7 @@ export const getUser = async (req: Request, res: Response) => {
     const user = await db
       .select()
       .from(usersTable)
-      .where(eq(usersTable._id, id));
+      .where(eq(usersTable._id, _id));
 
     if (user.length === 0) {
       res.status(404).json({ message: "User not found!" });
@@ -233,8 +243,8 @@ export const deleteAccount = async (req: Request, res: Response) => {
     const requester = req.user;
     //  as { id: string; role: string }; // type hint, adjust if needed
 
-    if (!requester || requester.role !== "admin") {
-      res.status(403).json({ message: "Only admins can delete users" });
+    if (!requester) {
+      res.status(401).json({ message: "User not authenticated!" });
       return;
     }
 
