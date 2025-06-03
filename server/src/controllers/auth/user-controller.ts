@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { db } from "../../db/index";
+
 import { usersTable } from "../../db/userSchema";
 import { eq } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -54,14 +55,25 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const { password: _, ...user } = createdUser[0];
 
-    const token = generateToken(user._id);
+    const token = generateToken(user?._id, user?.role);
+    const userRole = createdUser[0]?.role;
 
     res.cookie("token", token, {
       path: "/",
       httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: true,
-      secure: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.cookie("role", userRole, {
+      path: "/",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
     });
 
     res
@@ -105,14 +117,28 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const { password: _, ...userWithoutPassword } = user[0];
 
-    const token = generateToken(userWithoutPassword._id);
+    const token = generateToken(
+      userWithoutPassword?._id,
+      userWithoutPassword?.role
+    );
+    const userRole = user[0]?.role;
 
     res.cookie("token", token, {
       path: "/",
       httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: true,
-      secure: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.cookie("role", userRole, {
+      path: "/",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: true,
+      // secure: true,
+      secure: process.env.NODE_ENV === "production",
     });
 
     res.status(200).json({
@@ -134,6 +160,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
     // Remove password field from each user
     const usersWithoutPassword = users.map(({ password, ...user }) => user);
 
+    if (usersWithoutPassword.length === 0) {
+      res.status(404).json({ message: "No users found!" });
+      return;
+    }
+
     res.status(200).json({
       message: "All Users fetched successfully!",
       data: { users: usersWithoutPassword },
@@ -150,10 +181,20 @@ export const getUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
+    if (!id) {
+      res.status(400).json({ message: "User ID is required!" });
+      return;
+    }
+
     const user = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable._id, id));
+
+    if (user.length === 0) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
 
     const userWithoutPassword = user.map(({ password, ...user }) => user);
 
@@ -165,5 +206,107 @@ export const getUser = async (req: Request, res: Response) => {
     console.error("Error fetching user:", error);
     res.status(500).json({ message: "Server error, try again later" });
     return;
+  }
+};
+
+export const logoutUser = async (req: Request, res: Response) => {
+  try {
+    if (!req.cookies.token) {
+      res.status(400).json({ message: "User is not logged in!" });
+      return;
+    }
+
+    res.clearCookie("token", { path: "/" });
+    res.clearCookie("role", { path: "/" });
+
+    res.status(200).json({ message: "User logged out successfully!" });
+  } catch (error) {
+    console.error("Error logging out user:", error);
+    res.status(500).json({ message: "Server error, try again later" });
+  }
+};
+
+export const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    // const { id } = req.params;
+    // Check if the requester is authenticated
+    const requester = req.user;
+    //  as { id: string; role: string }; // type hint, adjust if needed
+
+    if (!requester || requester.role !== "admin") {
+      res.status(403).json({ message: "Only admins can delete users" });
+      return;
+    }
+
+    const _id = requester._id;
+
+    if (!_id) {
+      res.status(400).json({ message: "User ID is required!" });
+      return;
+    }
+
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable._id, _id));
+
+    if (user.length === 0) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await db.delete(usersTable).where(eq(usersTable._id, _id));
+
+    // Clear cookies
+    res.clearCookie("token", { path: "/" });
+    res.clearCookie("role", { path: "/" });
+
+    res.status(200).json({ message: "User deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Server error, try again later" });
+  }
+};
+
+export const adminDeleteUser: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // const { id } = req.params;
+    const { _id } = req.body; // Assuming the ID of the user to be deleted is passed in the request body
+
+    // Check if the requester is authenticated
+    const requester = req.user;
+    //  as { id: string; role: string }; // type hint, adjust if needed
+
+    console.log(requester);
+
+    if (!requester || requester.role !== "admin") {
+      res.status(403).json({ message: "Only admins can delete users" });
+      return;
+    }
+
+    if (!_id) {
+      res.status(400).json({ message: "User ID is required!" });
+      return;
+    }
+
+    const user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable._id, _id));
+
+    if (user.length === 0) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    await db.delete(usersTable).where(eq(usersTable._id, _id));
+
+    res.status(200).json({ message: "User deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Server error, try again later" });
   }
 };
