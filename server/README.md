@@ -1,55 +1,67 @@
-# 🚀 Fullstack Authentication Boilerplate 🔐
+# **🚀 Fullstack Authentication Server 🛡️**
 
-A modern, production-ready authentication boilerplate built with TypeScript, Express, Drizzle ORM, and more! Jumpstart your next fullstack project with robust user authentication features.
+A robust and scalable authentication server built with TypeScript, Drizzle ORM, and Express.js. This project provides a solid foundation for user registration, login, and secure access management.
 
-## ✨ Description
+## ✨ Features
 
-This project provides a solid foundation for building fullstack applications requiring user authentication. It includes user registration, login, and secure password handling. It leverages modern technologies to ensure scalability and maintainability.
+- **🔒 Secure Authentication**: Utilizes JWT for secure user authentication.
+- **🛡️ Role-Based Access Control (RBAC)**: Implements RBAC to manage user
+  permissions.
+- **⚙️ Configuration**: Uses .env files for easy configuration.
+- **🗄️ Database Migrations**: Uses Drizzle for database schema management and
+  migrations.
+- **✅ Validation**: Employs Zod for robust data validation.
 
-## 💻 Installation
+## 🛠️ Installation
 
-Follow these steps to set up the project locally:
+Follow these steps to get the project running locally:
 
-- 👯 **Clone the Repository:**
+1.  **Clone the Repository**:
 
-  ```bash
-  git clone https://github.com/amnesia2k/fullstack.git
-  cd fullstack/server
-  ```
+    ```bash
+    git clone https://github.com/amnesia2k/fullstack.git
+    cd server
+    ```
 
-- ⚙️ **Install Dependencies:**
+2.  **Install Dependencies**:
 
-  ```bash
-  pnpm install
-  ```
+    ```bash
+    pnpm install
+    ```
 
-- 📝 **Configure Environment Variables:**
+3.  **Set Up Environment Variables**:
 
-  - Create a `.env` file based on `.env.example`.
-  - Update the `DATABASE_URL`, `JWT_SECRET`, and `PORT` variables as needed.
+    - Create a .env file based on .env.example.
+    - Update the environment variables with your actual values.
 
-  ```bash
-  cp .env.example .env
-  # Edit .env
-  ```
+    ```
+    PORT=8000
+    DATABASE_URL="your_database_url_here"
+    JWT_SECRET=your_jwt_secret_key
+    ```
 
-- 💾 **Run Database Migrations:**
+4.  **Database Setup**:
 
-  ```bash
-  pnpm db:push
-  pnpm db:migrate
-  ```
+    - Run the database migrations:
 
-- 🚀 **Start the Development Server:**
-  ```bash
-  pnpm dev
-  ```
+    ```bash
+    pnpm db:push
+    ```
 
-## 💡 Usage
+5.  **Start the Server**:
 
-### Registering a New User
+    ```bash
+    pnpm dev
+    ```
 
-To register a new user, send a POST request to the `/api/v1/register` endpoint with the following JSON body:
+## 💻 Usage
+
+### Endpoints
+
+<details>
+<summary>
+    **POST /api/v1/register**: Register a new user.
+</summary>
 
 ```json
 {
@@ -59,9 +71,12 @@ To register a new user, send a POST request to the `/api/v1/register` endpoint w
 }
 ```
 
-### Logging In
+</details>
 
-To log in, send a POST request to the `/api/v1/login` endpoint with the following JSON body:
+<details>
+<summary>
+    **POST /api/v1/login**: Login an existing user.
+</summary>
 
 ```json
 {
@@ -70,81 +85,122 @@ To log in, send a POST request to the `/api/v1/login` endpoint with the followin
 }
 ```
 
-### Fetching all users
-
-To fetch all users, send a GET request to the `/api/v1/users` endpoint.
-
-```bash
-  curl http://localhost:8000/api/v1/users
-```
-
-### Fetching User by ID
-
-To fetch an user by ID, send a GET request to the `/api/v1/user/:id` endpoint.
-
-```bash
-  curl http://localhost:8000/api/v1/user/:id
-```
-
-<details>
-<summary>Detailed Instructions</summary>
-
-1.  **Clone the repository:** Follow the `git clone` command as outlined in the Installation section.
-2.  **Install dependencies:** Ensure all dependencies are installed using `pnpm install`.
-3.  **Set up the database:**
-    - Make sure you have a PostgreSQL database instance running.
-    - Update the `DATABASE_URL` in your `.env` file to point to your database.
-4.  **Run migrations:** This will create the necessary tables in your database.
-5.  **Start the server:** Use the `pnpm dev` command to start the development server with hot-reloading.
 </details>
 
-## ✨ Features
+<details>
+<summary>
+    **POST /api/v1/logout**: Logout the current user.
+</summary>
 
-- ✅ **User Registration:** Securely register new users with validation.
-- 🔑 **User Login:** Authenticate existing users with password verification.
-- 🛡️ **Password Hashing:** Bcrypt is used for secure password storage.
-- 🍪 **Cookie-Based Authentication:** JWT tokens stored in cookies for session management.
-- 📦 **Zod Validation:** Data validation using Zod schemas.
-- 🚀 **Drizzle ORM:** Type-safe database interactions with Drizzle ORM.
+</details>
+
+<details>
+<summary>
+    **GET /api/v1/users**: Get all users (Admin only).
+</summary>
+
+</details>
+
+<details>
+<summary>
+    **GET /api/v1/user**: Get the current user's information.
+</summary>
+
+</details>
+
+<details>
+<summary>
+    **PATCH /api/v1/user**: Update the current user's information.
+</summary>
+
+```json
+{
+  "name": "Updated Name",
+  "bio": "Updated bio information"
+}
+```
+
+</details>
+
+<details>
+<summary>
+    **DELETE /api/v1/delete**: Delete the current user's account.
+</summary>
+
+</details>
+
+<details>
+<summary>
+    **DELETE /api/v1/admin/delete**: Delete a user by ID (Admin only).
+</summary>
+
+```json
+{
+  "_id": "user_id_to_delete"
+}
+```
+
+</details>
+
+### Middleware
+
+- **validateData**: Validates request body against a Zod schema.
+- **validateToken**: Validates JWT token and attaches user info to the
+  request.
+- **validateUserRole**: Validates user role against allowed roles.
+
+## ✨ Key Features
+
+- ✔️ **User Authentication**: Securely manage user registration and login.
+- 🛡️ **Role-Based Access Control**: Control access based on user roles (user,
+  creator, admin).
+- 🔑 **JWT Authentication**: Use JSON Web Tokens for authentication.
+- 🗄️ **Database Migrations**: Easily manage database schema changes with
+  Drizzle.
+- 🔒 **Password Hashing**: Securely hash and compare passwords using
+  bcryptjs.
+- 🍪 **Cookie Management**: Utilizes cookies for token storage.
+- 🌐 **CORS**: Configured for Cross-Origin Resource Sharing.
 
 ## 🛠️ Technologies Used
 
-| Technology     | Description                                                 | Link                                                        |
-| :------------- | :---------------------------------------------------------- | :---------------------------------------------------------- |
-| TypeScript     | Primary language for type safety and maintainability        | [TypeScript](https://www.typescriptlang.org/)               |
-| Express        | Web framework for building APIs                             | [Express](https://expressjs.com/)                           |
-| Drizzle ORM    | Modern and typesafe ORM                                     | [Drizzle ORM](https://orm.drizzle.team/)                    |
-| PostgreSQL     | Relational database for storing user data                   | [PostgreSQL](https://www.postgresql.org/)                   |
-| Bcrypt         | Library for hashing passwords                               | [Bcrypt](https://www.npmjs.com/package/bcrypt)              |
-| JSON Web Token | For creating and managing user sessions                     | [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)  |
-| Zod            | Schema declaration and validation                           | [Zod](https://github.com/colinhacks/zod)                    |
-| CUID2          | Generate unique IDs                                         | [CUID2](https://github.com/paralleldrive/cuid2)             |
-| Cors           | Cross-origin resource sharing                               | [Cors](https://github.com/expressjs/cors)                   |
-| Cookie Parser  | Parse Cookie header and populate req.cookies with an object | [Cookie Parser](https://github.com/expressjs/cookie-parser) |
-| Neon           | Fully managed serverless PostGres Database                  | [Neon](https://neon.tech/)                                  |
+| Technology     | Link                                                                                       |
+| :------------- | :----------------------------------------------------------------------------------------- |
+| TypeScript     | [https://www.typescriptlang.org/](https://www.typescriptlang.org/)                         |
+| Express.js     | [https://expressjs.com/](https://expressjs.com/)                                           |
+| Drizzle ORM    | [https://orm.drizzle.team/](https://orm.drizzle.team/)                                     |
+| Zod            | [https://zod.dev/](https://zod.dev/)                                                       |
+| JSON Web Token | [https://jwt.io/](https://jwt.io/)                                                         |
+| bcryptjs       | [https://www.npmjs.com/package/bcryptjs](https://www.npmjs.com/package/bcryptjs)           |
+| pnpm           | [https://pnpm.io/](https://pnpm.io/)                                                       |
+| Cors           | [https://www.npmjs.com/package/cors](https://www.npmjs.com/package/cors)                   |
+| Cookie Parser  | [https://www.npmjs.com/package/cookie-parser](https://www.npmjs.com/package/cookie-parser) |
 
 ## 🤝 Contributing
 
-We welcome contributions to improve this boilerplate! Here's how you can contribute:
+Contributions are welcome! Here's how you can contribute:
 
-- 🐛 **Report Bugs:** Submit detailed bug reports with steps to reproduce.
-- 💡 **Suggest Features:** Propose new features and enhancements.
-- 💻 **Submit Pull Requests:** Contribute code changes with clear descriptions.
+- Report bugs 🐛
+- Suggest enhancements ✨
+- Submit pull requests 🛠️
 
-Please follow these guidelines:
+### Contribution Guidelines
 
-- **Code Style:** Follow the existing code style.
-- **Commit Messages:** Use clear and descriptive commit messages.
-- **Testing:** Write tests for new features and bug fixes.
+1.  Fork the repository.
+2.  Create a new branch for your feature or bug fix.
+3.  Commit your changes with clear and concise messages.
+4.  Push your branch to your forked repository.
+5.  Submit a pull request.
 
-## 📝 License
+## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author Info
 
-- [Github](https://github.com/amnesia2k)
-- [LinkedIn](https://www.linkedin.com/in/olatilewaolatoye/)
-- [Twitter](https://x.com/@olathedev_)
+- **Author**: [Your Name]
+  - [X](https://twitter.com/@olathedev_)
+  - [LinkedIn](https://www.linkedin.com/in/olatilewaolatoye)
+  - [GitHub](https://github.com/amnesia2k)
 
 [![Readme was generated by Dokugen](https://img.shields.io/badge/Readme%20was%20generated%20by-Dokugen-brightgreen)](https://www.npmjs.com/package/dokugen)
