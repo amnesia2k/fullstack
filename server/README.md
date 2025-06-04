@@ -87,26 +87,11 @@ Follow these steps to get the project running locally:
 
 </details>
 
-<details>
-<summary>
-    **POST /api/v1/logout**: Logout the current user.
-</summary>
+- **`POST /api/v1/logout`**: Logout the current user.
 
-</details>
+- **`GET /api/v1/users`**: Get all users (Admin only).
 
-<details>
-<summary>
-    **GET /api/v1/users**: Get all users (Admin only).
-</summary>
-
-</details>
-
-<details>
-<summary>
-    **GET /api/v1/user**: Get the current user's information.
-</summary>
-
-</details>
+- **`GET /api/v1/user`**: Get the current user's information.
 
 <details>
 <summary>
@@ -122,12 +107,7 @@ Follow these steps to get the project running locally:
 
 </details>
 
-<details>
-<summary>
-    **DELETE /api/v1/delete**: Delete the current user's account.
-</summary>
-
-</details>
+- **`DELETE /api/v1/delete`**: Delete the current user's account.
 
 <details>
 <summary>
