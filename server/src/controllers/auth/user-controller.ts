@@ -1,11 +1,12 @@
 import { Request, RequestHandler, Response } from "express";
 import { db } from "../../db/index";
-
 import { usersTable } from "../../db/userSchema";
 import { eq } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-import bcrypt from "bcrypt";
 import { generateToken } from "../../helpers/generate-token";
+import { comparePasswords, hashPassword } from "../../utils/hash";
+
+type UpdateUserInput = Partial<typeof usersTable.$inferInsert>;
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -37,10 +38,11 @@ export const registerUser = async (req: Request, res: Response) => {
 
     // TODO: Hash the password before saving it!
     // generate salt
-    const salt = await bcrypt.genSalt(10);
+    // const salt = await bcrypt.genSalt(10);
 
     // hash password
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await hashPassword(password);
 
     // creates a new user
     const createdUser = await db
@@ -108,7 +110,8 @@ export const loginUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user[0].password);
+    // const isPasswordValid = await bcrypt.compare(password, user[0].password);
+    const isPasswordValid = await comparePasswords(password, user[0].password);
 
     if (!isPasswordValid) {
       res.status(400).json({ message: "Invalid password" });
@@ -216,6 +219,65 @@ export const getUser = async (req: Request, res: Response) => {
     console.error("Error fetching user:", error);
     res.status(500).json({ message: "Server error, try again later" });
     return;
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const requester = req.user;
+
+    if (!requester) {
+      res.status(401).json({ message: "User not authenticated!" });
+      return;
+    }
+
+    const _id = requester._id;
+    if (!_id) {
+      res.status(400).json({ message: "User ID is required!" });
+      return;
+    }
+
+    const { name, email, bio, image, password } = req.body;
+
+    // Build update object dynamically
+    const updateData: UpdateUserInput = {};
+
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (bio) updateData.bio = bio;
+    if (image) updateData.image = image;
+    if (password) {
+      // const salt = await bcrypt.genSalt(10);
+      // updateData.password = await bcrypt.hash(password, salt);
+      updateData.password = await hashPassword(password);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      res.status(400).json({ message: "No fields provided to update!" });
+      return;
+    }
+
+    const updatedUser = await db
+      .update(usersTable)
+      .set(updateData)
+      .where(eq(usersTable._id, _id))
+      .returning();
+
+    if (!updatedUser || updatedUser.length === 0) {
+      res.status(404).json({ message: "User not found!" });
+      return;
+    }
+
+    // Exclude password from response
+    const { password: _, ...safeUser } = updatedUser[0];
+
+    res.status(200).json({
+      message: "User updated successfully!",
+      user: safeUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Server error, try again later" });
   }
 };
 

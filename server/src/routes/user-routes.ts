@@ -13,6 +13,7 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  updateUser,
 } from "../controllers/auth/user-controller";
 
 const router = express.Router();
@@ -29,5 +30,6 @@ router.delete(
   validateUserRole(["admin"]),
   adminDeleteUser
 );
+router.patch("/user", validateToken, updateUser);
 
 export default router;
