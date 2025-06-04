@@ -60,8 +60,10 @@ Follow these steps to get the project running locally:
 
 <details>
 <summary>
-    **POST /api/v1/register**: Register a new user.
+    Register a new user.
 </summary>
+
+- **`POST /api/v1/register`**:
 
 ```json
 {
@@ -75,8 +77,10 @@ Follow these steps to get the project running locally:
 
 <details>
 <summary>
-    **POST /api/v1/login**: Login an existing user.
+    Login an existing user.
 </summary>
+
+- **`POST /api/v1/login`**:
 
 ```json
 {
@@ -95,8 +99,10 @@ Follow these steps to get the project running locally:
 
 <details>
 <summary>
-    **PATCH /api/v1/user**: Update the current user's information.
+    Update the current user's information.
 </summary>
+
+- **`PATCH /api/v1/user`**:
 
 ```json
 {
@@ -111,8 +117,10 @@ Follow these steps to get the project running locally:
 
 <details>
 <summary>
-    **DELETE /api/v1/admin/delete**: Delete a user by ID (Admin only).
+    Delete a user by ID (Admin only).
 </summary>
+
+- **`DELETE /api/v1/admin/delete`**:
 
 ```json
 {
