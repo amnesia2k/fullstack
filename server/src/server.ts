@@ -15,7 +15,7 @@ const app = express();
 // Middlewares
 const allowedOrigins = [
   "http://localhost:3000", // dev
-  "https://your-frontend.com", // prod
+  "https://auth-api-v1-tau.vercel.app", // prod
   "https://your-frontend.vercel.app", // alt prod
 ];
 
