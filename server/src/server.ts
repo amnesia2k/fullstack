@@ -31,6 +31,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   })
 );
 app.use(express.json());
@@ -49,10 +50,29 @@ const loadRoutes = async () => {
       try {
         const filePath = path.join(routesPath, file);
         const route = await import(pathToFileURL(filePath).href);
-        app.use("/api/v1", route.default);
-        console.log(`✅ Loaded /api/v1 from ${file}`);
+
+        const handler = route.default;
+
+        // Check if handler is a function (middleware/router)
+        if (typeof handler === "function") {
+          app.use("/api/v1", handler);
+          console.log(`✅ Loaded /api/v1 from ${file}`);
+        }
+        // Or if it's an Express Router object (has 'stack' array)
+        else if (
+          handler &&
+          typeof handler === "object" &&
+          Array.isArray(handler.stack)
+        ) {
+          app.use("/api/v1", handler);
+          console.log(`✅ Loaded /api/v1 from ${file}`);
+        } else {
+          console.warn(
+            `⚠️ Skipped loading ${file} — export default is not a middleware/router function`
+          );
+        }
       } catch (error) {
-        console.error("❌ Failed to load route file:", error);
+        console.error(`❌ Failed to load route file ${file}:`, error);
       }
     })
   );
