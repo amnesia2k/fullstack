@@ -237,7 +237,7 @@ export const updateUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const { name, email, bio, image, password } = req.body;
+    const { name, email, bio, image, password, role } = req.body;
 
     // Build update object dynamically
     const updateData: UpdateUserInput = {};
@@ -246,6 +246,7 @@ export const updateUser = async (req: Request, res: Response) => {
     if (email) updateData.email = email;
     if (bio) updateData.bio = bio;
     if (image) updateData.image = image;
+    if (role) updateData.role = role;
     if (password) {
       // const salt = await bcrypt.genSalt(10);
       // updateData.password = await bcrypt.hash(password, salt);
